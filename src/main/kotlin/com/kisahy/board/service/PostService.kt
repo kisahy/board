@@ -9,4 +9,15 @@ class PostService(
     private val postRepository: PostRepository
 ) {
     fun create(post: Post): Post = postRepository.save(post)
+
+    fun update(id: Long, title: String, content: String): Post {
+        val post = postRepository.findById(id).orElseThrow {
+            NoSuchElementException("Post with ID $id not found")
+        }
+
+        post.title = title
+        post.content = content
+
+        return postRepository.save(post)
+    }
 }

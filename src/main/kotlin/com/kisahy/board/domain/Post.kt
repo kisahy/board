@@ -11,10 +11,10 @@ data class Post(
     val id: Long? = null,
 
     @Column(nullable = false)
-    val title: String,
+    var title: String,
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    val content: String,
+    var content: String,
 
     val createdAt: LocalDateTime = LocalDateTime.now()
 )
