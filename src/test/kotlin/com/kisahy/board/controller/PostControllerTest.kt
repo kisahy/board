@@ -2,6 +2,9 @@ package com.kisahy.board.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.kisahy.board.domain.Post
+import com.kisahy.board.repository.PostRepository
+import jakarta.transaction.Transactional
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -14,12 +17,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class PostControllerTest {
     @Autowired
     lateinit var mockMvc: MockMvc
 
     @Autowired
     lateinit var objectMapper: ObjectMapper
+
+    @Autowired
+    lateinit var postRepository: PostRepository
 
     @Test
     fun `게시글 생성 API 테스트`() {
@@ -38,5 +45,13 @@ class PostControllerTest {
             .andExpect(jsonPath("$.title").value("Test title"))
             .andExpect(jsonPath("$.content").value("Test content"))
             .andReturn()
+
+        val responseBody = result.response.contentAsString
+        val createdPost = objectMapper.readValue(responseBody, Post::class.java)
+
+        val savedPost = postRepository.findById(createdPost.id!!).orElseThrow()
+
+        assertEquals("Test title", savedPost.title)
+        assertEquals("Test content", savedPost.content)
     }
 }
