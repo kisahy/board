@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:11.2
+    container_name: board-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: board
+      MYSQL_USER: board_user
+      MYSQL_PASSWORD: board_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./local-resources/mariadb-data:/var/lib/mysql
