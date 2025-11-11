@@ -8,11 +8,13 @@ import com.kisahy.board.user.domain.exception.UserPasswordMismatchException
 import com.kisahy.board.user.domain.exception.UserPasswordPolicyViolationException
 import com.kisahy.board.user.`interface`.dto.SignUpRequest
 import jakarta.transaction.Transactional
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
     private fun validateLoginIdPolicy(loginId: String) {
         val regex = Regex("^[a-z][a-z0-9_-]{2,18}[a-z0-9]$")
@@ -46,7 +48,7 @@ class UserService(
 
         val user = User(
             loginId = request.loginId,
-            password = request.password,
+            password = passwordEncoder.encode(request.password),
             name = request.name
         )
 

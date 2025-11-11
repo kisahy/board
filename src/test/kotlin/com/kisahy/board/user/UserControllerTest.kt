@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -32,6 +33,9 @@ class UserControllerTest {
 
     @Autowired
     lateinit var userRepository: UserRepository
+
+    @Autowired
+    lateinit var passwordEncoder: PasswordEncoder
 
     fun seed(): User {
         val request = SignUpRequest(
@@ -227,7 +231,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun `게시글 생성 성공`() {
+    fun `사용자 회원가입 성공`() {
         val request = SignUpRequest(
             loginId = "kisahy",
             password = "abcd1234!@#$",
@@ -243,7 +247,6 @@ class UserControllerTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.loginId").value("kisahy"))
-            .andExpect(jsonPath("$.password").value("abcd1234!@#$"))
             .andExpect(jsonPath("$.name").value("kisahy"))
             .andReturn()
 
@@ -254,6 +257,6 @@ class UserControllerTest {
 
         Assertions.assertEquals("kisahy", user!!.loginId)
         Assertions.assertEquals("kisahy", user.name)
-        Assertions.assertEquals("abcd1234!@#$", user.password)
+        Assertions.assertTrue(passwordEncoder.matches("abcd1234!@#$", user.password))
     }
 }
