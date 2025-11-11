@@ -1,6 +1,6 @@
-package com.kisahy.board.interfaces.post.dto
+package com.kisahy.board.post.`interface`.dto
 
-import com.kisahy.board.domain.post.Post
+import com.kisahy.board.post.domain.Post
 
 object PostMapper {
     fun toResponse(post: Post): PostResponse = PostResponse(

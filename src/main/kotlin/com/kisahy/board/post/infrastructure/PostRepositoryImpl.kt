@@ -1,7 +1,7 @@
-package com.kisahy.board.infrastructure.post
+package com.kisahy.board.post.infrastructure
 
-import com.kisahy.board.domain.post.Post
-import com.kisahy.board.domain.post.PostRepository
+import com.kisahy.board.post.domain.Post
+import com.kisahy.board.post.domain.PostRepository
 import org.springframework.stereotype.Repository
 
 @Repository

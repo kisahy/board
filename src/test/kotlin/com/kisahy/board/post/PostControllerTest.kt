@@ -1,10 +1,10 @@
-package com.kisahy.board.interfaces.post
+package com.kisahy.board.post
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.kisahy.board.application.post.PostApplicationService
-import com.kisahy.board.domain.post.Post
-import com.kisahy.board.infrastructure.post.JpaPostRepository
-import com.kisahy.board.interfaces.post.dto.PostRequest
+import com.kisahy.board.post.application.PostService
+import com.kisahy.board.post.domain.Post
+import com.kisahy.board.post.infrastructure.JpaPostRepository
+import com.kisahy.board.post.`interface`.dto.PostRequest
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -13,11 +13,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import kotlin.test.assertTrue
@@ -33,7 +31,7 @@ class PostControllerTest {
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var postApplicationService: PostApplicationService
+    lateinit var postService: PostService
 
     @Autowired
     lateinit var postRepository: JpaPostRepository
@@ -41,7 +39,7 @@ class PostControllerTest {
     fun seed(): Post {
         val request = PostRequest(title = "Title", content = "Content")
 
-        return postApplicationService.create(request)
+        return postService.create(request)
     }
 
     @Test
@@ -54,7 +52,8 @@ class PostControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.error").value("게시글의 제목을 입력해주세요."))
+            .andExpect(jsonPath("$.code").value("NOT_VALID_METHOD_ARGUMENT"))
+            .andExpect(jsonPath("$.message").value("게시글의 제목을 입력해주세요."))
     }
 
     @Test
@@ -67,7 +66,8 @@ class PostControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.error").value("게시글의 내용을 입력해주세요."))
+            .andExpect(jsonPath("$.code").value("NOT_VALID_METHOD_ARGUMENT"))
+            .andExpect(jsonPath("$.message").value("게시글의 내용을 입력해주세요."))
     }
 
     @Test
@@ -105,7 +105,8 @@ class PostControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.error").value("게시글의 제목을 입력해주세요."))
+            .andExpect(jsonPath("$.code").value("NOT_VALID_METHOD_ARGUMENT"))
+            .andExpect(jsonPath("$.message").value("게시글의 제목을 입력해주세요."))
     }
 
     @Test
@@ -119,7 +120,8 @@ class PostControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.error").value("게시글의 내용을 입력해주세요."))
+            .andExpect(jsonPath("$.code").value("NOT_VALID_METHOD_ARGUMENT"))
+            .andExpect(jsonPath("$.message").value("게시글의 내용을 입력해주세요."))
     }
 
     @Test
@@ -132,7 +134,8 @@ class PostControllerTest {
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.error").value("게시글을 찾을 수 없습니다."))
+            .andExpect(jsonPath("$.code").value("POST_NOT_FOUND"))
+            .andExpect(jsonPath("$.message").value("게시글을 찾을 수 없습니다."))
     }
 
     @Test
@@ -166,20 +169,22 @@ class PostControllerTest {
             delete("/api/posts/999")
         )
             .andExpect(status().isNotFound)
-            .andExpect(jsonPath("$.error").value("게시글을 찾을 수 없습니다."))
+            .andExpect(jsonPath("$.code").value("POST_NOT_FOUND"))
+            .andExpect(jsonPath("$.message").value("게시글을 찾을 수 없습니다."))
     }
 
     @Test
     fun `게시글 삭제 validation 실패 - 이미 삭제된 게시글`() {
         val post = seed()
 
-        postApplicationService.delete(post.id!!)
+        postService.delete(post.id!!)
 
         mockMvc.perform(
             delete("/api/posts/${post.id}")
         )
-            .andExpect(status().isBadRequest)
-            .andExpect(jsonPath("$.error").value("이미 삭제된 게시글입니다."))
+            .andExpect(status().isConflict)
+            .andExpect(jsonPath("$.code").value("POST_ALREADY_DELETED"))
+            .andExpect(jsonPath("$.message").value("이미 삭제된 게시글입니다."))
     }
 
     @Test
@@ -187,9 +192,9 @@ class PostControllerTest {
         val post = seed()
 
         val result = mockMvc.perform(
-            MockMvcRequestBuilders.delete("/api/posts/${post.id}")
+            delete("/api/posts/${post.id}")
         )
-            .andExpect(MockMvcResultMatchers.status().isNoContent)
+            .andExpect(status().isNoContent)
 
         val deletedPost = postRepository.findById(post.id!!).get()
 

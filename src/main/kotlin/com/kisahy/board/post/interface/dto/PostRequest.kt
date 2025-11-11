@@ -1,4 +1,4 @@
-package com.kisahy.board.interfaces.post.dto
+package com.kisahy.board.post.`interface`.dto
 
 import jakarta.validation.constraints.NotBlank
 

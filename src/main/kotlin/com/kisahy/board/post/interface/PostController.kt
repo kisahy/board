@@ -1,10 +1,9 @@
-package com.kisahy.board.interfaces.post
+package com.kisahy.board.post.`interface`
 
-import com.kisahy.board.domain.post.Post
-import com.kisahy.board.application.post.PostApplicationService
-import com.kisahy.board.interfaces.post.dto.PostRequest
-import com.kisahy.board.interfaces.post.dto.PostMapper
-import com.kisahy.board.interfaces.post.dto.PostResponse
+import com.kisahy.board.post.application.PostService
+import com.kisahy.board.post.`interface`.dto.PostMapper
+import com.kisahy.board.post.`interface`.dto.PostRequest
+import com.kisahy.board.post.`interface`.dto.PostResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -18,13 +17,13 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/posts")
 class PostController(
-    private val postApplicationService: PostApplicationService
+    private val postService: PostService
 ) {
     @PostMapping
     fun create(
         @Valid @RequestBody request: PostRequest
     ): ResponseEntity<PostResponse> {
-        val post = postApplicationService.create(request)
+        val post = postService.create(request)
 
         return ResponseEntity.ok(PostMapper.toResponse(post))
     }
@@ -34,14 +33,14 @@ class PostController(
         @PathVariable id: Long,
         @Valid @RequestBody request: PostRequest
     ): ResponseEntity<PostResponse> {
-        val post = postApplicationService.update(id, request)
+        val post = postService.update(id, request)
 
         return ResponseEntity.ok(PostMapper.toResponse(post))
     }
 
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<Void> {
-        postApplicationService.delete(id)
+        postService.delete(id)
 
         return ResponseEntity.noContent().build()
     }

@@ -1,4 +1,4 @@
-package com.kisahy.board.domain.post
+package com.kisahy.board.post.domain
 
 interface PostRepository {
     fun save(post: Post): Post
