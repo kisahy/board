@@ -2,6 +2,7 @@ package com.kisahy.board.controller
 
 import com.kisahy.board.domain.Post
 import com.kisahy.board.service.PostService
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -22,4 +23,7 @@ class PostController(
         @PathVariable id: Long,
         @RequestBody post: Post
     ): Post = postService.update(id, post.title, post.content)
+
+    @DeleteMapping("/{id}")
+    fun delete(@PathVariable id: Long) = postService.delete(id)
 }

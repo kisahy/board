@@ -20,4 +20,20 @@ class PostService(
 
         return postRepository.save(post)
     }
+
+    fun delete(id: Long): Boolean {
+        val post = postRepository.findById(id).orElseThrow {
+            NoSuchElementException("Post with ID $id not found")
+        }
+
+        if (post.isDeleted) {
+            throw IllegalStateException("Post is deleted")
+        }
+
+        post.isDeleted = true
+
+        postRepository.save(post)
+
+        return true
+    }
 }

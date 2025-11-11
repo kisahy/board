@@ -16,5 +16,8 @@ data class Post(
     @Column(nullable = false, columnDefinition = "TEXT")
     var content: String,
 
+    @Column(nullable = false)
+    var isDeleted: Boolean = false,
+
     val createdAt: LocalDateTime = LocalDateTime.now()
 )
