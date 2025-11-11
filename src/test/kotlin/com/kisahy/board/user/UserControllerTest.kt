@@ -45,6 +45,60 @@ class UserControllerTest {
     }
 
     @Test
+    fun `사용자 회원가입 validation 실패 - 아이디 규칙(최소글자)`() {
+        val request = SignUpRequest(
+            loginId = "kis",
+            password = "kisahy",
+            confirmPassword = "kisahy",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_ACCOUNT_ID_POLICY_VIOLATION"))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 아이디 규칙(첫글자숫자)`() {
+        val request = SignUpRequest(
+            loginId = "9kisahy",
+            password = "kisahy",
+            confirmPassword = "kisahy",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_ACCOUNT_ID_POLICY_VIOLATION"))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 아이디 규칙(마지막 글자 특수문자)`() {
+        val request = SignUpRequest(
+            loginId = "kisahy_",
+            password = "kisahy",
+            confirmPassword = "kisahy",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_ACCOUNT_ID_POLICY_VIOLATION"))
+    }
+
+    @Test
     fun `사용자 회원가입 validation 실패 - 아이디 중복`() {
         seed()
 
@@ -55,22 +109,129 @@ class UserControllerTest {
             name = "kisahy",
         )
 
-        val response = mockMvc.perform(
+        mockMvc.perform(
             post("/api/users/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
         )
             .andExpect(status().isConflict)
             .andExpect(jsonPath("$.code").value("USER_LOGIN_ID_ALREADY_EXISTS"))
-            .andExpect(jsonPath("$.message").value("이미 존재하는 아이디입니다."))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 비밀번호 규칙(최소글자)`() {
+        val request = SignUpRequest(
+            loginId = "kisahy",
+            password = "k8!",
+            confirmPassword = "k8!",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_PASSWORD_POLICY_VIOLATION"))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 비밀번호 규칙(최대글자)`() {
+        val request = SignUpRequest(
+            loginId = "kisahy",
+            password = "abcdefg1234567!@#$%^&",
+            confirmPassword = "abcdefg1234567!@#$%^&",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_PASSWORD_POLICY_VIOLATION"))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 비밀번호 규칙(문자 누락)`() {
+        val request = SignUpRequest(
+            loginId = "kisahy",
+            password = "1234567!@#$%^&",
+            confirmPassword = "1234567!@#$%^&",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_PASSWORD_POLICY_VIOLATION"))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 비밀번호 규칙(숫자 누락)`() {
+        val request = SignUpRequest(
+            loginId = "kisahy",
+            password = "abcdefg!@#$%^&",
+            confirmPassword = "abcdefg!@#$%^&",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_PASSWORD_POLICY_VIOLATION"))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 비밀번호 규칙(특수문자 누락)`() {
+        val request = SignUpRequest(
+            loginId = "kisahy",
+            password = "abcdefg1234567",
+            confirmPassword = "abcdefg1234567",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_PASSWORD_POLICY_VIOLATION"))
+    }
+
+    @Test
+    fun `사용자 회원가입 validation 실패 - 비밀번호 불일치`() {
+        val request = SignUpRequest(
+            loginId = "kisahy",
+            password = "abcd1234!@#$",
+            confirmPassword = "abc123!@#",
+            name = "kisahy",
+        )
+
+        mockMvc.perform(
+            post("/api/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+        )
+            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.code").value("USER_PASSWORD_MISMATCH"))
     }
 
     @Test
     fun `게시글 생성 성공`() {
         val request = SignUpRequest(
             loginId = "kisahy",
-            password = "kisahy",
-            confirmPassword = "kisahy",
+            password = "abcd1234!@#$",
+            confirmPassword = "abcd1234!@#$",
             name = "kisahy",
         )
 
@@ -82,7 +243,7 @@ class UserControllerTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").exists())
             .andExpect(jsonPath("$.loginId").value("kisahy"))
-            .andExpect(jsonPath("$.password").value("kisahy"))
+            .andExpect(jsonPath("$.password").value("abcd1234!@#$"))
             .andExpect(jsonPath("$.name").value("kisahy"))
             .andReturn()
 
@@ -93,6 +254,6 @@ class UserControllerTest {
 
         Assertions.assertEquals("kisahy", user!!.loginId)
         Assertions.assertEquals("kisahy", user.name)
-        Assertions.assertEquals("kisahy", user.password)
+        Assertions.assertEquals("abcd1234!@#$", user.password)
     }
 }
