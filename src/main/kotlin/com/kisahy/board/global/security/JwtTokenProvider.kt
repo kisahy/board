@@ -29,12 +29,12 @@ class JwtTokenProvider(
     private val accessKey = Keys.hmacShaKeyFor(accessSecret.toByteArray())
     private val refreshKey = Keys.hmacShaKeyFor(refreshSecret.toByteArray())
 
-    private fun generateToken(accountId: String, secretKey: SecretKey, expiration: Long): String {
+    private fun generateToken(userId: Long, secretKey: SecretKey, expiration: Long): String {
         val now = Date()
         val expiryDate = Date(now.time + expiration)
 
         return Jwts.builder()
-            .setSubject(accountId)
+            .setSubject(userId.toString())
             .setIssuedAt(now)
             .setExpiration(expiryDate)
             .signWith(secretKey)
@@ -50,9 +50,9 @@ class JwtTokenProvider(
         }
     }
 
-    fun generateAccessToken(accountId: String): String = generateToken(accountId, accessKey, accessExpiration)
+    fun generateAccessToken(userId: Long): String = generateToken(userId, accessKey, accessExpiration)
 
-    fun generateRefreshToken(accountId: String): String = generateToken(accountId, refreshKey, refreshExpiration)
+    fun generateRefreshToken(userId: Long): String = generateToken(userId, refreshKey, refreshExpiration)
 
     fun validateAccessToken(token: String) = validateToken(token, accessKey)
 

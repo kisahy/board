@@ -69,8 +69,8 @@ class UserService(
             throw UserInvalidLoginException()
         }
 
-        val accessToken = jwtTokenProvider.generateAccessToken(user.accountId)
-        val refreshToken = jwtTokenProvider.generateRefreshToken(user.accountId)
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id!!)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(user.id!!)
 
         return LoginResponse(
             accessToken = accessToken,

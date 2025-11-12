@@ -2,10 +2,9 @@ package com.kisahy.board.post
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.kisahy.board.global.security.JwtTokenProvider
-import com.kisahy.board.post.application.PostService
-import com.kisahy.board.post.domain.Post
-import com.kisahy.board.post.infrastructure.JpaPostRepository
+import com.kisahy.board.post.domain.PostRepository
 import com.kisahy.board.post.presentation.dto.PostRequest
+import com.kisahy.board.post.presentation.dto.PostResponse
 import com.kisahy.board.user.domain.User
 import com.kisahy.board.user.domain.UserRepository
 import jakarta.transaction.Transactional
@@ -16,12 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import kotlin.test.assertTrue
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,10 +30,7 @@ class PostControllerCreateTest {
     lateinit var objectMapper: ObjectMapper
 
     @Autowired
-    lateinit var postService: PostService
-
-    @Autowired
-    lateinit var postRepository: JpaPostRepository
+    lateinit var postRepository: PostRepository
 
     @Autowired
     lateinit var userRepository: UserRepository
@@ -55,7 +48,7 @@ class PostControllerCreateTest {
     fun `게시글 생성 실패 - 비로그인`() {
         val request = PostRequest(title = "", content = "Content")
 
-        val response = mockMvc.perform(
+        mockMvc.perform(
             post("/api/posts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -66,10 +59,10 @@ class PostControllerCreateTest {
     @Test
     fun `게시글 생성 validation 실패 - 제목 없음`() {
         val user = seedUser()
-        val accessToken = jwtTokenProvider.generateAccessToken(user.accountId)
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id!!)
         val request = PostRequest(title = "", content = "Content")
 
-        val response = mockMvc.perform(
+        mockMvc.perform(
             post("/api/posts")
                 .header("Authorization", "Bearer $accessToken")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,7 +76,7 @@ class PostControllerCreateTest {
     @Test
     fun `게시글 생성 validation 실패 - 내용 없음`() {
         val user = seedUser()
-        val accessToken = jwtTokenProvider.generateAccessToken(user.accountId)
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id!!)
         val request = PostRequest(title = "Title", content = "")
 
         mockMvc.perform(
@@ -100,7 +93,7 @@ class PostControllerCreateTest {
     @Test
     fun `게시글 생성 성공`() {
         val user = seedUser()
-        val accessToken = jwtTokenProvider.generateAccessToken(user.accountId)
+        val accessToken = jwtTokenProvider.generateAccessToken(user.id!!)
         val request = PostRequest(title = "Title", content = "Content")
 
         val result = mockMvc.perform(
@@ -116,11 +109,13 @@ class PostControllerCreateTest {
             .andReturn()
 
         val responseBody = result.response.contentAsString
-        val createdPost = objectMapper.readValue(responseBody, Post::class.java)
+        val createdPost = objectMapper.readValue(responseBody, PostResponse::class.java)
 
-        val savedPost = postRepository.findById(createdPost.id!!).orElseThrow()
+        val savedPost = postRepository.findById(createdPost.id)
 
-        Assertions.assertEquals("Title", savedPost.title)
-        Assertions.assertEquals("Content", savedPost.content)
+        Assertions.assertEquals(createdPost.title, savedPost!!.title)
+        Assertions.assertEquals(createdPost.content, savedPost.content)
+        Assertions.assertEquals(createdPost.userId, savedPost.user.id)
+        Assertions.assertEquals(createdPost.userName, savedPost.user.name)
     }
 }

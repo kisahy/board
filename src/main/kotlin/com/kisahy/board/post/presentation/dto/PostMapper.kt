@@ -7,6 +7,8 @@ object PostMapper {
         id = post.id!!,
         title = post.title,
         content = post.content,
+        userId = post.user.id!!,
+        userName = post.user.name,
         createdAt = post.createdAt
     )
 }
