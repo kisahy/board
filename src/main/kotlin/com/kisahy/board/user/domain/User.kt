@@ -16,7 +16,7 @@ class User(
     val id: Long? = null,
 
     @Column(nullable = false, unique = true)
-    val loginId: String,
+    val accountId: String,
 
     @Column(nullable = false)
     var name: String,

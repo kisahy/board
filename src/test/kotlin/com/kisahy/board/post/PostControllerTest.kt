@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.kisahy.board.post.application.PostService
 import com.kisahy.board.post.domain.Post
 import com.kisahy.board.post.infrastructure.JpaPostRepository
-import com.kisahy.board.post.`interface`.dto.PostRequest
+import com.kisahy.board.post.presentation.dto.PostRequest
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test

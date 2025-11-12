@@ -10,7 +10,9 @@ class UserRepositoryImpl(
 ): UserRepository {
     override fun save(user: User): User = jpaUserRepository.save(user)
 
-    override fun existsByLoginId(loginId: String): Boolean = jpaUserRepository.existsByLoginId(loginId)
+    override fun existsByAccountId(accountId: String): Boolean = jpaUserRepository.existsByAccountId(accountId)
 
     override fun findById(id: Long): User? = jpaUserRepository.findById(id).orElse(null)
+
+    override fun findByAccountId(accountId: String): User? = jpaUserRepository.findByAccountId(accountId)
 }

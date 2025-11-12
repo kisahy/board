@@ -1,4 +1,4 @@
-package com.kisahy.board.post.`interface`.dto
+package com.kisahy.board.post.presentation.dto
 
 import java.time.LocalDateTime
 

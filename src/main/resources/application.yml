@@ -16,3 +16,9 @@ spring:
   sql:
     init:
       mode: always
+
+jwt:
+  access-secret: kisahyBoardJwtAccessSecretKey1234567890
+  refresh-secret: kisahyBoardJwtRefreshSecretKey1234567890
+  access-expiration: 1800000
+  refresh-expiration: 604800000

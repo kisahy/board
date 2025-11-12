@@ -13,7 +13,7 @@ class SecurityConfig {
         return http
             .csrf { it.disable() }
             .authorizeHttpRequests { auth ->
-                auth.requestMatchers("/api/users/signup").permitAll()
+                auth.requestMatchers("/api/users/signup", "/api/users/login").permitAll()
                     .anyRequest().authenticated()
             }
             .sessionManagement { session ->

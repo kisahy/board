@@ -1,9 +1,9 @@
-package com.kisahy.board.post.`interface`
+package com.kisahy.board.post.presentation
 
 import com.kisahy.board.post.application.PostService
-import com.kisahy.board.post.`interface`.dto.PostMapper
-import com.kisahy.board.post.`interface`.dto.PostRequest
-import com.kisahy.board.post.`interface`.dto.PostResponse
+import com.kisahy.board.post.presentation.dto.PostMapper
+import com.kisahy.board.post.presentation.dto.PostRequest
+import com.kisahy.board.post.presentation.dto.PostResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

@@ -1,12 +1,16 @@
 package com.kisahy.board.user.application
 
+import com.kisahy.board.global.security.JwtTokenProvider
 import com.kisahy.board.user.domain.User
 import com.kisahy.board.user.domain.UserRepository
-import com.kisahy.board.user.domain.exception.UserLoginIdAlreadyExistsException
-import com.kisahy.board.user.domain.exception.UserLoginIdPolicyViolationException
+import com.kisahy.board.user.domain.exception.UserAccountIdPolicyViolationException
+import com.kisahy.board.user.domain.exception.UserInvalidLoginException
+import com.kisahy.board.user.domain.exception.UserAccountIdAlreadyExistsException
 import com.kisahy.board.user.domain.exception.UserPasswordMismatchException
 import com.kisahy.board.user.domain.exception.UserPasswordPolicyViolationException
-import com.kisahy.board.user.`interface`.dto.SignUpRequest
+import com.kisahy.board.user.presentation.dto.LoginRequest
+import com.kisahy.board.user.presentation.dto.LoginResponse
+import com.kisahy.board.user.presentation.dto.SignUpRequest
 import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -14,13 +18,14 @@ import org.springframework.stereotype.Service
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val jwtTokenProvider: JwtTokenProvider
 ) {
-    private fun validateLoginIdPolicy(loginId: String) {
+    private fun validateAccountIdPolicy(accountId: String) {
         val regex = Regex("^[a-z][a-z0-9_-]{2,18}[a-z0-9]$")
 
-        if (!regex.matches(loginId)) {
-            throw UserLoginIdPolicyViolationException()
+        if (!regex.matches(accountId)) {
+            throw UserAccountIdPolicyViolationException()
         }
     }
 
@@ -34,10 +39,10 @@ class UserService(
 
     @Transactional
     fun signUp(request: SignUpRequest): User {
-        validateLoginIdPolicy(request.loginId)
+        validateAccountIdPolicy(request.accountId)
 
-        if (userRepository.existsByLoginId(request.loginId)) {
-            throw UserLoginIdAlreadyExistsException()
+        if (userRepository.existsByAccountId(request.accountId)) {
+            throw UserAccountIdAlreadyExistsException()
         }
 
         if (request.password != request.confirmPassword) {
@@ -47,11 +52,29 @@ class UserService(
         validatePasswordPolicy(request.password)
 
         val user = User(
-            loginId = request.loginId,
+            accountId = request.accountId,
             password = passwordEncoder.encode(request.password),
             name = request.name
         )
 
         return userRepository.save(user)
+    }
+
+
+    fun login(request: LoginRequest): LoginResponse {
+        val user = userRepository.findByAccountId(request.accountId)
+            ?: throw UserInvalidLoginException()
+
+        if (!passwordEncoder.matches(request.password, user.password)) {
+            throw UserInvalidLoginException()
+        }
+
+        val accessToken = jwtTokenProvider.generateAccessToken(user.accountId)
+        val refreshToken = jwtTokenProvider.generateRefreshToken(user.accountId)
+
+        return LoginResponse(
+            accessToken = accessToken,
+            refreshToken = refreshToken
+        )
     }
 }

@@ -4,7 +4,7 @@ import com.kisahy.board.post.domain.Post
 import com.kisahy.board.post.domain.PostRepository
 import com.kisahy.board.post.domain.exception.PostAlreadyDeletedException
 import com.kisahy.board.post.domain.exception.PostNotFoundException
-import com.kisahy.board.post.`interface`.dto.PostRequest
+import com.kisahy.board.post.presentation.dto.PostRequest
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
