@@ -39,7 +39,7 @@ class UserControllerLoginTest {
             accountId = "kisahy",
             password = "abcd1234!@",
             confirmPassword = "abcd1234!@",
-            name = "kisahy",
+            name = "상현",
         )
 
         return userService.signUp(request)

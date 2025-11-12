@@ -41,7 +41,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "kisahy",
             confirmPassword = "kisahy",
-            name = "kisahy",
+            name = "상현",
         )
 
         return userService.signUp(request)
@@ -53,7 +53,7 @@ class UserControllerSignUpTest {
             accountId = "kis",
             password = "kisahy",
             confirmPassword = "kisahy",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -71,7 +71,7 @@ class UserControllerSignUpTest {
             accountId = "9kisahy",
             password = "kisahy",
             confirmPassword = "kisahy",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -89,7 +89,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy_",
             password = "kisahy",
             confirmPassword = "kisahy",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -109,7 +109,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "kisahy",
             confirmPassword = "kisahy",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -127,7 +127,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "k8!",
             confirmPassword = "k8!",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -145,7 +145,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "abcdefg1234567!@#$%^&",
             confirmPassword = "abcdefg1234567!@#$%^&",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -163,7 +163,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "1234567!@#$%^&",
             confirmPassword = "1234567!@#$%^&",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -181,7 +181,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "abcdefg!@#$%^&",
             confirmPassword = "abcdefg!@#$%^&",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -199,7 +199,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "abcdefg1234567",
             confirmPassword = "abcdefg1234567",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -217,7 +217,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "abcd1234!@#$",
             confirmPassword = "abc123!@#",
-            name = "kisahy",
+            name = "상현",
         )
 
         mockMvc.perform(
@@ -235,7 +235,7 @@ class UserControllerSignUpTest {
             accountId = "kisahy",
             password = "abcd1234!@#$",
             confirmPassword = "abcd1234!@#$",
-            name = "kisahy",
+            name = "상현",
         )
 
         val result = mockMvc.perform(

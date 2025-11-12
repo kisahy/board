@@ -4,6 +4,10 @@ import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.User
 import org.springframework.stereotype.Component
 import java.util.Date
 import javax.crypto.SecretKey
@@ -53,4 +57,19 @@ class JwtTokenProvider(
     fun validateAccessToken(token: String) = validateToken(token, accessKey)
 
     fun validateRefreshToken(token: String) = validateToken(token, refreshKey)
+
+    fun getAuthentication(token: String): Authentication {
+        val claims = Jwts.parserBuilder()
+            .setSigningKey(accessKey)
+            .build()
+            .parseClaimsJws(token)
+            .body
+
+        val username = claims.subject
+        val authorities = listOf(SimpleGrantedAuthority("ROLE_USER"))
+
+        val principal = User(username, "", authorities)
+
+        return UsernamePasswordAuthenticationToken(principal, token, authorities)
+    }
 }
