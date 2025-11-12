@@ -1,6 +1,6 @@
 ## 게시판 서비스
 
-간단한 게시글 CRUD와 사용자 회원가입을 제공하는 Spring Boot 기반 애플리케이션입니다. 도메인 단위로 `domain / application / infrastructure / interface` 계층을 분리한 DDD 스타일 구조를 적용했습니다.
+간단한 게시글 CRUD와 사용자 회원가입/로그인을 제공하는 Spring Boot 기반 애플리케이션입니다. 도메인 단위로 `domain / application / infrastructure / presentation` 계층을 분리한 DDD 스타일 구조를 적용했습니다.
 
 ## 기술 스택
 
@@ -13,9 +13,9 @@
 
 ```
 src/main/kotlin/com/kisahy/board
-├── global               # 공통 설정, 예외 처리
-├── post                 # 게시글 도메인 (domain/application/infrastructure/interface)
-└── user                 # 사용자 도메인 (domain/application/infrastructure/interface)
+├── global               # 공통 설정, 보안, 예외 처리
+├── post                 # 게시글 도메인 (domain/application/infrastructure/presentation)
+└── user                 # 사용자 도메인 (domain/application/infrastructure/presentation)
 ```
 
 ## 선행 조건
@@ -36,9 +36,18 @@ src/main/kotlin/com/kisahy/board
 
 ## 주요 기능
 
-- 게시글 생성/수정/삭제 (`/api/posts`)
 - 사용자 회원가입 (`/api/users/signup`)
+- 사용자 로그인 및 JWT 발급 (`/api/users/login`)
+- 게시글 생성/수정/삭제 (`/api/posts`, 인증 필요)
 - 비밀번호/아이디 정책 검증 및 중복 체크
+- Argon2 기반 비밀번호 해싱
+- JWT Access Token 기반 인증 및 게시글 작성자 권한 검증
+
+## 인증 요약
+
+- 로그인 성공 시 Access Token과 Refresh Token을 발급합니다.
+- `/api/posts` 하위의 쓰기 요청은 `Authorization: Bearer <accessToken>` 헤더를 요구합니다.
+- 게시글 수정/삭제 시 토큰에 담긴 사용자와 게시글 작성자가 일치하는지 확인합니다.
 
 ## 테스트
 
@@ -54,3 +63,4 @@ src/main/kotlin/com/kisahy/board
 ## 의사결정 기록
 
 - [0001 - 비밀번호 해싱 알고리즘 선택](docs/adr/0001-password-hashing.md)
+- [0002 - 인증 방식으로 JWT Access/Refresh 토큰 사용](docs/adr/0002-authentication-with-jwt.md)
